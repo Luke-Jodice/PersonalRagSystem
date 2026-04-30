@@ -1,0 +1,49 @@
+/* ============================================================
+   Global reset & design tokens
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  /* Colour palette — matches Claude.ai's dark-first aesthetic */
+  --bg-base:       #1a1a1a;
+  --bg-sidebar:    #141414;
+  --bg-surface:    #242424;
+  --bg-input:      #2a2a2a;
+  --bg-hover:      #2e2e2e;
+
+  --text-primary:  #ececec;
+  --text-secondary:#9a9a9a;
+  --text-muted:    #666;
+
+  --border:        #333;
+  --border-input:  #444;
+
+  --accent:        #d97757; /* Claude's warm orange-brown */
+  --accent-hover:  #e8855f;
+
+  --error-bg:      #3b1e1e;
+  --error-text:    #f87171;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-base);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100dvh;
+  display: flex;
+}
