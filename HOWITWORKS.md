@@ -212,3 +212,8 @@ The current store lives in memory and is lost on page refresh. To persist:
   rehydrate on startup. `idb-keyval` is a minimal wrapper.
 - **Backend** — store chunks in a database and expose a search endpoint. Swap
   `ragStore.search()` in `App.tsx` for a `fetch()` call to your server.
+
+## Update Token
+The token is tied to one Claude account, so all action runs count against that account's usage limits — if you bump into Pro/Max rate limits, the action will throttle until they reset.
+Tokens can be rotated: rerun claude setup-token and update the secret.
+If you ever want to fall back to per-token API billing, swap the input back to anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}.

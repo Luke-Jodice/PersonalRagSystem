@@ -1,0 +1,39 @@
+name: Claude Code Review
+
+# Automatically reviews every new PR and every push to a PR.
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Optionally narrow to only certain paths:
+    # paths:
+    #   - "src/**/*.ts"
+    #   - "src/**/*.tsx"
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Review this pull request as a senior engineer for the harnessai
+            React + TypeScript + Vite project. Focus on:
+              - Correctness and obvious bugs
+              - React/TypeScript best practices and type safety
+              - Accessibility, performance, and security concerns
+              - Test coverage gaps
+            Skip nitpicks. Leave inline comments only where they add real value,
+            and finish with a short summary verdict.
