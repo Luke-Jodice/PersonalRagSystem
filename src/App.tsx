@@ -8,6 +8,7 @@ import { sendMessage } from "./api";
 import { ragStore } from "./rag";
 import type { IndexedDocument } from "./rag";
 import type { Message } from "./types";
+import { claudeChats } from "virtual:claude-chats";
 import "./App.css";
 
 function generateId() {
@@ -26,6 +27,17 @@ export default function App() {
 
   const refreshDocuments = useCallback(() => {
     setDocuments(ragStore.getDocuments());
+  }, []);
+
+  // Load default Claude chat history on first mount
+  useEffect(() => {
+    if (claudeChats.length === 0) return;
+    for (const { filename, content, size } of claudeChats) {
+      const id = `default-${filename.replace(/[^a-z0-9]/gi, "_")}`;
+      ragStore.add(id, filename, size, content, "default");
+    }
+    refreshDocuments();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

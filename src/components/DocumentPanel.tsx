@@ -110,16 +110,21 @@ export function DocumentPanel({ documents, onStoreChange }: Props) {
                   {doc.filename}
                 </span>
                 <span className="doc-list__meta">
+                  {doc.source === "default" && (
+                    <span className="doc-list__badge">auto</span>
+                  )}
                   {doc.chunkCount} chunk{doc.chunkCount !== 1 ? "s" : ""} · {formatBytes(doc.size)}
                 </span>
               </div>
-              <button
-                className="doc-list__remove"
-                onClick={() => handleRemove(doc.id)}
-                aria-label={`Remove ${doc.filename}`}
-              >
-                ✕
-              </button>
+              {doc.source !== "default" && (
+                <button
+                  className="doc-list__remove"
+                  onClick={() => handleRemove(doc.id)}
+                  aria-label={`Remove ${doc.filename}`}
+                >
+                  ✕
+                </button>
+              )}
             </li>
           ))}
         </ul>

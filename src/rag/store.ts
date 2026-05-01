@@ -18,7 +18,7 @@ class RagStore {
   private chunks: DocumentChunk[] = [];
   private index: ChunkIndex[] = [];
 
-  add(id: string, filename: string, size: number, text: string): IndexedDocument {
+  add(id: string, filename: string, size: number, text: string, source: "default" | "user" = "user"): IndexedDocument {
     // Remove any previous version of the same file (by id)
     this.remove(id);
 
@@ -31,6 +31,7 @@ class RagStore {
       size,
       chunkCount: newChunks.length,
       addedAt: new Date(),
+      source,
     };
     this.docs.set(id, doc);
 

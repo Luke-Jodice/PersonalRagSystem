@@ -12,6 +12,7 @@ export interface IndexedDocument {
   size: number;
   chunkCount: number;
   addedAt: Date;
+  source: "default" | "user";
 }
 
 export interface RetrievedChunk extends DocumentChunk {
