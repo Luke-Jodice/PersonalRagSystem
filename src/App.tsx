@@ -23,7 +23,7 @@ export default function App() {
   // Mirror the document store into React state so the sidebar re-renders
   // when files are added or removed.
   const [documents, setDocuments] = useState<IndexedDocument[]>([]);
-  const scrollAnchorRef = useRef<HTMLDivElement>(null);
+  const chatFeedRef = useRef<HTMLDivElement>(null);
 
   const refreshDocuments = useCallback(() => {
     setDocuments(ragStore.getDocuments());
@@ -41,7 +41,9 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    scrollAnchorRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = chatFeedRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages, isLoading]);
 
   const handleNewChat = useCallback(() => {
@@ -80,37 +82,24 @@ export default function App() {
       const TOP_K = 5;
       const retrievedChunks = ragStore.search(userContent, TOP_K);
 
-      /* NOTE: when you enable streaming (see src/api.ts), uncomment this block
-         to stream tokens directly into the assistant bubble as they arrive:
-
-         setMessages((prev) => [
-           ...prev,
-           { id: assistantId, role: "assistant", content: "", timestamp: new Date(), sources: retrievedChunks },
-         ]);
-         const onDelta = (chunk: string) =>
-           setMessages((prev) =>
-             prev.map((m) =>
-               m.id === assistantId ? { ...m, content: m.content + chunk } : m
-             )
-           );
-      */
-
-      try {
-        const responseText = await sendMessage(
-          messages,
-          userContent,
-          retrievedChunks
-          // onDelta   ← pass this once streaming is enabled
+      setMessages((prev) => [
+        ...prev,
+        { id: assistantId, role: "assistant", content: "", timestamp: new Date(), sources: retrievedChunks },
+      ]);
+      const onDelta = (chunk: string) =>
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId ? { ...m, content: m.content + chunk } : m
+          )
         );
 
-        const assistantMessage: Message = {
-          id: assistantId,
-          role: "assistant",
-          content: responseText,
-          timestamp: new Date(),
-          sources: retrievedChunks,
-        };
-        setMessages((prev) => [...prev, assistantMessage]);
+      try {
+        await sendMessage(
+          messages,
+          userContent,
+          retrievedChunks,
+          onDelta
+        );
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "An unexpected error occurred.";
@@ -131,7 +120,7 @@ export default function App() {
       />
 
       <main className="chat-area">
-        <div className="chat-feed">
+        <div className="chat-feed" ref={chatFeedRef}>
           {messages.length === 0 && !isLoading ? (
             <EmptyState hasDocuments={documents.length > 0} />
           ) : (
@@ -148,8 +137,6 @@ export default function App() {
               <strong>Error:</strong> {error}
             </div>
           )}
-
-          <div ref={scrollAnchorRef} />
         </div>
 
         <ChatInput onSend={handleSend} disabled={isLoading} />
