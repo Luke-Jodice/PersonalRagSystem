@@ -11,7 +11,7 @@ interface Props {
 // File types the plain FileReader path can handle.
 // Add "application/pdf" here once you install and configure pdfjs-dist
 // (see src/rag/chunker.ts for the integration guide).
-const ACCEPTED = ".txt,.md,.mdx,.csv,.json,.ts,.tsx,.js,.jsx,.py,.html,.xml";
+const ACCEPTED = ".txt,.md,.mdx,.csv,.json,.ts,.tsx,.js,.jsx,.py,.html,.xml,.pdf";
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -93,38 +93,33 @@ export function DocumentPanel({ documents, onStoreChange }: Props) {
             <span className="drop-zone__text">
               Drop files or <u>browse</u>
             </span>
-            <span className="drop-zone__hint">.txt .md .py .json …</span>
+            <span className="drop-zone__hint">.txt .md .py .json .pdf …</span>
           </>
         )}
       </div>
 
       {error && <p className="doc-panel__error">{error}</p>}
 
-      {/* Indexed document list */}
-      {documents.length > 0 && (
+      {/* Indexed document list — default (auto-loaded) docs are hidden */}
+      {documents.filter((d) => d.source === "user").length > 0 && (
         <ul className="doc-list">
-          {documents.map((doc) => (
+          {documents.filter((d) => d.source === "user").map((doc) => (
             <li key={doc.id} className="doc-list__item">
               <div className="doc-list__info">
                 <span className="doc-list__name" title={doc.filename}>
                   {doc.filename}
                 </span>
                 <span className="doc-list__meta">
-                  {doc.source === "default" && (
-                    <span className="doc-list__badge">auto</span>
-                  )}
                   {doc.chunkCount} chunk{doc.chunkCount !== 1 ? "s" : ""} · {formatBytes(doc.size)}
                 </span>
               </div>
-              {doc.source !== "default" && (
-                <button
-                  className="doc-list__remove"
-                  onClick={() => handleRemove(doc.id)}
-                  aria-label={`Remove ${doc.filename}`}
-                >
-                  ✕
-                </button>
-              )}
+              <button
+                className="doc-list__remove"
+                onClick={() => handleRemove(doc.id)}
+                aria-label={`Remove ${doc.filename}`}
+              >
+                ✕
+              </button>
             </li>
           ))}
         </ul>

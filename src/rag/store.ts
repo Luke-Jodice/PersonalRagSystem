@@ -1,17 +1,7 @@
 import { chunkText } from "./chunker";
 import { buildIndex, retrieve, type ChunkIndex } from "./retriever";
 import type { DocumentChunk, IndexedDocument, RetrievedChunk } from "./types";
-
-/**
- * In-memory RAG document store.
- *
- * Holds all chunks and a pre-built BM25 index. The index is rebuilt on every
- * add/remove operation — this is fine for dozens of documents but becomes
- * expensive at thousands. At that scale you would:
- *  - Persist chunks to IndexedDB (idb-keyval is a lightweight wrapper)
- *  - Keep the index in a Web Worker so rebuilds don't block the UI thread
- *  - Or ship a backend with a proper vector DB (e.g. pgvector, Qdrant, Chroma)
- */
+import { persistDocument, deletePersistedDocument, loadPersistedDocuments } from "./db";
 
 class RagStore {
   private docs = new Map<string, IndexedDocument>();
@@ -19,7 +9,6 @@ class RagStore {
   private index: ChunkIndex[] = [];
 
   add(id: string, filename: string, size: number, text: string, source: "default" | "user" = "user"): IndexedDocument {
-    // Remove any previous version of the same file (by id)
     this.remove(id);
 
     const newChunks = chunkText(text, id, filename);
@@ -34,18 +23,37 @@ class RagStore {
       source,
     };
     this.docs.set(id, doc);
-
-    // Rebuild the BM25 index with the new chunks included
     this.index = buildIndex(this.chunks);
+
+    if (source === "user") {
+      void persistDocument(doc, newChunks);
+    }
 
     return doc;
   }
 
   remove(id: string): void {
     if (!this.docs.has(id)) return;
+    const source = this.docs.get(id)!.source;
     this.docs.delete(id);
     this.chunks = this.chunks.filter((c) => c.docId !== id);
     this.index = buildIndex(this.chunks);
+
+    if (source === "user") {
+      void deletePersistedDocument(id);
+    }
+  }
+
+  // Restore previously persisted user documents from IndexedDB without re-chunking.
+  async rehydrate(): Promise<void> {
+    const entries = await loadPersistedDocuments();
+    for (const { doc, chunks } of entries) {
+      this.docs.set(doc.id, doc);
+      this.chunks.push(...chunks);
+    }
+    if (entries.length > 0) {
+      this.index = buildIndex(this.chunks);
+    }
   }
 
   search(query: string, topK = 5): RetrievedChunk[] {
@@ -67,5 +75,4 @@ class RagStore {
   }
 }
 
-// Singleton — the entire app shares one store instance.
 export const ragStore = new RagStore();

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Harness — PRD & Roadmap</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0d0f12;
+      --surface:    #161a20;
+      --surface2:   #1e242d;
+      --border:     #2a3040;
+      --text:       #e2e8f0;
+      --muted:      #64748b;
+      --accent:     #6366f1;
+      --accent-dim: #3730a3;
+      --green:      #22c55e;
+      --amber:      #f59e0b;
+      --blue:       #38bdf8;
+      --purple:     #a78bfa;
+      --pink:       #f472b6;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      padding: 0 0 80px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(160deg, #1a1f2e 0%, #0d0f12 60%);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 32px 48px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--accent-dim);
+      color: var(--purple);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 99px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 800;
+      letter-spacing: -.02em;
+      background: linear-gradient(135deg, #e2e8f0 30%, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+    .hero-sub {
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 560px;
+      margin: 0 auto 28px;
+    }
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .hero-meta span strong { color: var(--text); }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Section headers ── */
+    .section {
+      margin-top: 64px;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .section h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+
+    /* ── Problem card ── */
+    .problem-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 24px 28px;
+    }
+    .problem-card p { color: #94a3b8; margin-bottom: 12px; }
+    .problem-card p:last-child { margin-bottom: 0; }
+    .problem-card strong { color: var(--text); }
+
+    /* ── Status table ── */
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .status-row {
+      display: contents;
+    }
+    .status-row:not(:last-child) .status-name,
+    .status-row:not(:last-child) .status-badge {
+      border-bottom: 1px solid var(--border);
+    }
+    .status-name {
+      padding: 12px 20px;
+      font-size: 14px;
+      color: #94a3b8;
+    }
+    .status-badge {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+    }
+    .badge-done    { background: #14532d; color: var(--green); }
+    .badge-stub    { background: #451a03; color: var(--amber); }
+
+    /* ── Roadmap timeline ── */
+    .timeline {
+      position: relative;
+      padding-left: 0;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 19px;
+      top: 24px;
+      bottom: 24px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--pink), var(--border));
+    }
+    .phase {
+      position: relative;
+      padding-left: 52px;
+      margin-bottom: 40px;
+    }
+    .phase-dot {
+      position: absolute;
+      left: 9px;
+      top: 16px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .phase-1 .phase-dot { border-color: var(--blue);   color: var(--blue);   }
+    .phase-2 .phase-dot { border-color: var(--purple); color: var(--purple); }
+    .phase-3 .phase-dot { border-color: var(--pink);   color: var(--pink);   }
+    .phase-future .phase-dot { border-color: var(--muted); color: var(--muted); }
+
+    .phase-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+    .phase-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .phase-1 .phase-label { color: var(--blue); }
+    .phase-2 .phase-label { color: var(--purple); }
+    .phase-3 .phase-label { color: var(--pink); }
+    .phase-future .phase-label { color: var(--muted); }
+
+    .phase-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .phase-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .card-icon {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .card h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .card p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .card-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px;
+      margin-top: 8px;
+    }
+    .tag-blue   { background: #0c2a3d; color: var(--blue);   }
+    .tag-purple { background: #1e1040; color: var(--purple); }
+    .tag-pink   { background: #3d0c2a; color: var(--pink);   }
+    .tag-muted  { background: var(--surface2); color: var(--muted); }
+
+    /* ── Principles ── */
+    .principles {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .principle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .principle-icon { font-size: 22px; margin-bottom: 8px; }
+    .principle h4 { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .principle p { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    /* ── Non-goals ── */
+    .non-goals {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .non-goal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .non-goal::before {
+      content: "✕";
+      color: #ef4444;
+      font-size: 11px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 80px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-badge">Product Requirements Document</div>
+    <h1>AI Harness</h1>
+    <p class="hero-sub">A personal, local-first tool for searching and building on your accumulated AI knowledge base.</p>
+    <div class="hero-meta">
+      <span><strong>Owner</strong> Luke Jodice</span>
+      <span><strong>Updated</strong> May 10, 2026</span>
+      <span><strong>Primary horizon</strong> 3 months</span>
+      <span><strong>Secondary horizon</strong> 6 months</span>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Problem -->
+    <div class="section">
+      <div class="section-label">Problem</div>
+      <h2>What we're solving</h2>
+      <div class="problem-card">
+        <p>AI conversations accumulate fast. After months of using Claude, a massive knowledge base of past thinking, research, code, and decisions lives scattered across exported chat files — but finding anything specific requires remembering which conversation covered what, or manually grepping through raw text.</p>
+        <p><strong>The core friction:</strong> valuable context that already exists, that you've already paid for in time and thinking, is effectively invisible at query time. The same problem applies to any personal documents — notes, markdown files, code — that make up a working knowledge base.</p>
+      </div>
+    </div>
+
+    <!-- Current state -->
+    <div class="section">
+      <div class="section-label">Current State</div>
+      <h2>MVP — what's already shipped</h2>
+      <div class="status-grid">
+        <div class="status-row">
+          <div class="status-name">Claude-style chat UI (dark theme, streaming-ready)</div>
+          <div class="status-badge"><span class="badge badge-done">Done</span></div>
+        </div>
+        <div class="status-row">
+          <div class="status-name">Local file drag-and-drop indexing</div>
+          <div class="status-badge"><span class="badge badge-done">Done</span></div>
+        </div>
+        <div class="status-row">
+          <div class="status-name">BM25 keyword retrieval</div>
+          <div class="status-badge"><span class="badge badge-done">Done</span></div>
+        </div>
+        <div class="status-row">
+          <div class="status-name">Source citations with expandable chunk text</div>
+          <div class="status-badge"><span class="badge badge-done">Done</span></div>
+        </div>
+        <div class="status-row">
+          <div class="status-name">Auto-import Claude chat history on startup</div>
+          <div class="status-badge"><span class="badge badge-done">Done</span></div>
+        </div>
+        <div class="status-row">
+          <div class="status-name">Token-by-token streaming via onDelta</div>
+          <div class="status-badge"><span class="badge badge-done">Done</span></div>
+        </div>
+        <div class="status-row">
+          <div class="status-name">Analysis scaffolding (keyword extraction, RRF, MMR, similarity…)</div>
+          <div class="status-badge"><span class="badge badge-stub">Stubbed</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Roadmap -->
+    <div class="section">
+      <div class="section-label">Roadmap</div>
+      <h2>What's next</h2>
+
+      <div class="timeline">
+
+        <!-- Month 1 -->
+        <div class="phase phase-1">
+          <div class="phase-dot">1</div>
+          <div class="phase-header">
+            <span class="phase-label">Month 1</span>
+            <span class="phase-title">Reliability & Richer Indexing</span>
+          </div>
+          <p class="phase-sub">Turn the MVP into something you'd actually use daily — persistent across reloads, handles more file types, surfaces what's in the index.</p>
+          <div class="cards">
+            <div class="card">
+              <div class="card-icon">💾</div>
+              <h4>Index Persistence</h4>
+              <p>Store chunks in IndexedDB on every add; rehydrate on startup. Survive page refreshes without re-uploading.</p>
+              <span class="card-tag tag-blue">Core</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">📄</div>
+              <h4>PDF Support</h4>
+              <p>Wire in pdfjs-dist in chunker.ts. Import research papers and exported PDFs alongside plain text files.</p>
+              <span class="card-tag tag-blue">Indexing</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">🔑</div>
+              <h4>Keyword Extraction</h4>
+              <p>Implement extractKeywords — surface what each document is "about" using TF-IDF fingerprinting.</p>
+              <span class="card-tag tag-blue">Analysis</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">🧹</div>
+              <h4>Chunk Quality</h4>
+              <p>Implement chunkDensity and findNearDuplicates to filter low-info and redundant chunks before they reach the LLM.</p>
+              <span class="card-tag tag-blue">Analysis</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">🗂️</div>
+              <h4>Better Document Browser</h4>
+              <p>Filter by filename, show per-document stats and top keywords, remove individual documents from the index.</p>
+              <span class="card-tag tag-blue">UX</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Month 2 -->
+        <div class="phase phase-2">
+          <div class="phase-dot">2</div>
+          <div class="phase-header">
+            <span class="phase-label">Month 2</span>
+            <span class="phase-title">Better Retrieval</span>
+          </div>
+          <p class="phase-sub">BM25 misses synonyms and paraphrases. Upgrade to hybrid search and smarter result ranking — all scaffolded, needs implementation.</p>
+          <div class="cards">
+            <div class="card">
+              <div class="card-icon">🧠</div>
+              <h4>Semantic Search</h4>
+              <p>Embed chunks at index time with Voyage AI; embed queries at search time; retrieve by cosine similarity.</p>
+              <span class="card-tag tag-purple">Retrieval</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">⚡</div>
+              <h4>Hybrid Retrieval + RRF</h4>
+              <p>Run BM25 and embeddings in parallel; merge with Reciprocal Rank Fusion. Already scaffolded in analysis.ts.</p>
+              <span class="card-tag tag-purple">Retrieval</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">🔍</div>
+              <h4>Query Expansion</h4>
+              <p>Use Claude to rewrite queries into semantic variants; retrieve across all variants and merge. Already scaffolded.</p>
+              <span class="card-tag tag-purple">Retrieval</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">🎯</div>
+              <h4>MMR Reranking</h4>
+              <p>Apply Maximal Marginal Relevance before context injection to balance relevance with diversity. Already scaffolded.</p>
+              <span class="card-tag tag-purple">Retrieval</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Month 3 -->
+        <div class="phase phase-3">
+          <div class="phase-dot">3</div>
+          <div class="phase-header">
+            <span class="phase-label">Month 3</span>
+            <span class="phase-title">Knowledge Base UX</span>
+          </div>
+          <p class="phase-sub">Once retrieval is reliable, build UX features that make the tool feel like an actual knowledge companion.</p>
+          <div class="cards">
+            <div class="card">
+              <div class="card-icon">🕸️</div>
+              <h4>Document Similarity</h4>
+              <p>Use findSimilarDocuments to surface related documents in the sidebar when a document is selected.</p>
+              <span class="card-tag tag-pink">UX</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">💬</div>
+              <h4>Conversation Threading</h4>
+              <p>Multi-turn conversations that carry forward retrieved context. Follow-ups know which sources the prior answer used.</p>
+              <span class="card-tag tag-pink">UX</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">👁️</div>
+              <h4>Auto-Sync Directory</h4>
+              <p>Watch a local folder for new Claude chat exports. Auto-index new files without drag-and-drop.</p>
+              <span class="card-tag tag-pink">Indexing</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">🏷️</div>
+              <h4>Tags & Collections</h4>
+              <p>Tag documents and filter retrieval scope by tag. "Only search my work notes."</p>
+              <span class="card-tag tag-pink">UX</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Future -->
+        <div class="phase phase-future">
+          <div class="phase-dot">+</div>
+          <div class="phase-header">
+            <span class="phase-label">Months 4–6</span>
+            <span class="phase-title">Synthesis & Power Features</span>
+          </div>
+          <p class="phase-sub">Bigger swings — worth exploring once core search is solid.</p>
+          <div class="cards">
+            <div class="card">
+              <div class="card-icon">🌐</div>
+              <h4>Cross-Conversation Synthesis</h4>
+              <p>"Summarize everything I've learned about TypeScript generics." Requires clustering + multi-document summarization.</p>
+              <span class="card-tag tag-muted">Future</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">📅</div>
+              <h4>Topic Timeline</h4>
+              <p>Surface when topics were first and last discussed. See how your thinking on a subject evolved over time.</p>
+              <span class="card-tag tag-muted">Future</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">📤</div>
+              <h4>Knowledge Export</h4>
+              <p>Export curated passages + conversation as markdown or PDF. Share a "knowledge packet" or import into Obsidian.</p>
+              <span class="card-tag tag-muted">Future</span>
+            </div>
+            <div class="card">
+              <div class="card-icon">✂️</div>
+              <h4>Readability-Aware Chunking</h4>
+              <p>Use readabilityScore to adapt chunk boundaries to sentence structure. Reduces mid-sentence cuts that hurt retrieval.</p>
+              <span class="card-tag tag-muted">Future</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Non-goals -->
+    <div class="section">
+      <div class="section-label">Scope</div>
+      <h2>Non-goals</h2>
+      <div class="non-goals">
+        <div class="non-goal">Multi-user or team product — personal tool only, for now.</div>
+        <div class="non-goal">Replacing Claude.ai or any upstream AI provider UI.</div>
+        <div class="non-goal">General note-taking app or document editor.</div>
+      </div>
+    </div>
+
+    <!-- Principles -->
+    <div class="section">
+      <div class="section-label">Technical</div>
+      <h2>Principles</h2>
+      <div class="principles">
+        <div class="principle">
+          <div class="principle-icon">🏠</div>
+          <h4>Local-first</h4>
+          <p>No data leaves the machine except the API call to Claude. No accounts, no cloud sync.</p>
+        </div>
+        <div class="principle">
+          <div class="principle-icon">🧩</div>
+          <h4>Upgrade incrementally</h4>
+          <p>Every layer — chunker, retriever, store — is independently swappable without touching the rest.</p>
+        </div>
+        <div class="principle">
+          <div class="principle-icon">⚡</div>
+          <h4>Fast by default</h4>
+          <p>BM25 stays as the cheap fallback. Embeddings are additive, not a hard dependency.</p>
+        </div>
+        <div class="principle">
+          <div class="principle-icon">🙋</div>
+          <h4>Single-user simplicity</h4>
+          <p>No auth, no multi-tenancy. Don't design for hypothetical future requirements.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      AI Harness · PRD v1.0 · May 2026
+    </div>
+
+  </div>
+</body>
+</html>

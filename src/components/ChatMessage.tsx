@@ -1,5 +1,5 @@
 import type { Message } from "../types";
-import { SourceCitations } from "./SourceCitations";
+// import { SourceCitations } from "./SourceCitations";
 
 interface Props {
   message: Message;
@@ -32,10 +32,9 @@ export function ChatMessage({ message }: Props) {
           ))}
         </div>
 
-        {/* Show which document chunks were retrieved for this response */}
-        {message.sources && message.sources.length > 0 && (
+        {/* {message.sources && message.sources.length > 0 && (
           <SourceCitations chunks={message.sources} />
-        )}
+        )} */}
       </div>
     </div>
   );
